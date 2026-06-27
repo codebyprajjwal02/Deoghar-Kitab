@@ -1,0 +1,28 @@
+{
+  "name": "deoghar-kitab",
+  "version": "1.0.0",
+  "description": "A book marketplace for students of classes 1-12, competitive exams, and government exams",
+  "main": "index.js",
+  "scripts": {
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && npm run dev",
+    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "build:frontend": "cd frontend && npm run build",
+    "start:frontend": "cd frontend && npm run preview",
+    "start:backend": "cd backend && npm start",
+    "install:all": "npm install && cd frontend && npm install && cd ../backend && npm install",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "books",
+    "marketplace",
+    "education",
+    "students"
+  ],
+  "author": "Deoghar Kitab Team",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.0.0",
+    "vite": "^7.3.1"
+  }
+}

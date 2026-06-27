@@ -1,0 +1,373 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ======================================================
+   Deoghar Kitab — Warm Library Design System
+   Colors: Cream | Amber | Brown | Forest Green
+   Fonts: Playfair Display (headings) + Poppins (body)
+====================================================== */
+
+@layer base {
+  :root {
+    /* Backgrounds — warm cream palette */
+    --background: 39 40% 97%;
+    --foreground: 26 50% 12%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 26 50% 12%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 26 50% 12%;
+
+    /* Primary — Amber (brand) */
+    --primary: 36 100% 50%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Secondary — Warm Brown */
+    --secondary: 26 50% 28%;
+    --secondary-foreground: 0 0% 100%;
+
+    /* Muted — Parchment */
+    --muted: 39 30% 93%;
+    --muted-foreground: 26 20% 45%;
+
+    /* Accent — Soft amber tint */
+    --accent: 36 100% 95%;
+    --accent-foreground: 36 100% 35%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 39 25% 87%;
+    --input: 39 25% 87%;
+    --ring: 36 100% 50%;
+
+    --radius: 0.875rem;
+
+    /* === Semantic Tokens === */
+    --forest: 142 60% 30%;
+    --forest-light: 142 50% 95%;
+    --brown: 26 50% 28%;
+    --brown-light: 26 40% 95%;
+    --cream: 39 40% 97%;
+    --parchment: 39 30% 93%;
+
+    /* === Gradients === */
+    --gradient-brand: linear-gradient(135deg, hsl(36 100% 50%) 0%, hsl(26 80% 38%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(26 60% 10% / 0.88) 0%, hsl(26 40% 18% / 0.5) 60%, hsl(26 20% 10% / 0.08) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(39 40% 98%) 100%);
+    --gradient-section: linear-gradient(180deg, hsl(39 40% 97%) 0%, hsl(39 30% 93%) 100%);
+    --gradient-savings: linear-gradient(135deg, hsl(142 60% 30%) 0%, hsl(162 55% 28%) 100%);
+    --gradient-stats: linear-gradient(135deg, hsl(26 60% 18%) 0%, hsl(36 80% 25%) 100%);
+
+    /* === Shadows === */
+    --shadow-soft: 0 2px 12px hsl(26 50% 20% / 0.06);
+    --shadow-card: 0 4px 20px hsl(26 50% 20% / 0.08);
+    --shadow-hover: 0 16px 40px hsl(26 50% 20% / 0.16);
+    --shadow-glow: 0 0 32px hsl(36 100% 50% / 0.25);
+
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* Sidebar */
+    --sidebar-background: 39 30% 95%;
+    --sidebar-foreground: 26 50% 20%;
+    --sidebar-primary: 36 100% 50%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 39 30% 90%;
+    --sidebar-accent-foreground: 26 50% 20%;
+    --sidebar-border: 39 25% 87%;
+    --sidebar-ring: 36 100% 50%;
+  }
+
+  .dark {
+    --background: 26 30% 8%;
+    --foreground: 39 30% 94%;
+
+    --card: 26 25% 12%;
+    --card-foreground: 39 30% 94%;
+
+    --popover: 26 25% 12%;
+    --popover-foreground: 39 30% 94%;
+
+    --primary: 36 100% 52%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 26 40% 38%;
+    --secondary-foreground: 39 30% 94%;
+
+    --muted: 26 20% 18%;
+    --muted-foreground: 39 20% 58%;
+
+    --accent: 36 80% 18%;
+    --accent-foreground: 36 100% 70%;
+
+    --destructive: 0 62% 35%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 26 20% 20%;
+    --input: 26 20% 20%;
+    --ring: 36 100% 52%;
+
+    --gradient-brand: linear-gradient(135deg, hsl(36 100% 52%) 0%, hsl(26 70% 40%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(26 60% 5% / 0.95) 0%, hsl(26 30% 10% / 0.6) 60%, transparent 100%);
+    --gradient-card: linear-gradient(180deg, hsl(26 25% 12%) 0%, hsl(26 30% 10%) 100%);
+    --shadow-soft: 0 2px 12px hsl(0 0% 0% / 0.3);
+    --shadow-card: 0 4px 20px hsl(0 0% 0% / 0.35);
+    --shadow-hover: 0 16px 40px hsl(0 0% 0% / 0.55);
+
+    --sidebar-background: 26 30% 8%;
+    --sidebar-foreground: 39 30% 90%;
+    --sidebar-primary: 36 100% 52%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 26 20% 18%;
+    --sidebar-accent-foreground: 39 30% 90%;
+    --sidebar-border: 26 20% 18%;
+    --sidebar-ring: 36 100% 52%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-body;
+    transition: background-color 0.4s ease, color 0.4s ease;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  h1, h2, h3 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+  }
+
+  /* Smooth theme transitions */
+  *, *::before, *::after {
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+  }
+
+  /* Preserve animation transitions */
+  *[class*="animate-"],
+  *[class*="transition-transform"],
+  *[class*="transition-all"] {
+    transition: all 0.3s ease;
+  }
+}
+
+@layer components {
+  /* ---- Glassmorphism ---- */
+  .glass {
+    background: hsl(0 0% 100% / 0.72);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid hsl(0 0% 100% / 0.35);
+  }
+
+  /* ---- Section heading gradient ---- */
+  .section-title {
+    background: linear-gradient(135deg, hsl(var(--foreground)) 0%, hsl(var(--primary)) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* ---- Book card ---- */
+  .book-card {
+    @apply bg-card rounded-2xl overflow-hidden;
+    box-shadow: var(--shadow-card);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+  }
+
+  .book-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-hover);
+  }
+
+  /* ---- Feature icon bubble ---- */
+  .icon-bubble {
+    @apply w-14 h-14 rounded-2xl flex items-center justify-center;
+    background: var(--gradient-brand);
+    box-shadow: 0 6px 20px hsl(36 100% 50% / 0.3);
+  }
+
+  /* ---- Condition badges ---- */
+  .badge-excellent {
+    @apply text-xs font-semibold px-2.5 py-1 rounded-full;
+    background: hsl(var(--forest-light));
+    color: hsl(var(--forest));
+    border: 1px solid hsl(142 50% 82%);
+  }
+
+  .badge-good {
+    @apply text-xs font-semibold px-2.5 py-1 rounded-full;
+    @apply bg-blue-50 text-blue-700;
+    border: 1px solid hsl(210 80% 85%);
+  }
+
+  .badge-fair {
+    @apply text-xs font-semibold px-2.5 py-1 rounded-full;
+    @apply bg-amber-50 text-amber-700;
+    border: 1px solid hsl(36 100% 80%);
+  }
+
+  /* ---- Star rating ---- */
+  .star-filled {
+    color: hsl(36 100% 50%);
+    fill: hsl(36 100% 50%);
+  }
+
+  /* ---- Savings badge ---- */
+  .savings-badge {
+    background: var(--gradient-savings);
+    @apply text-white text-xs font-bold px-2 py-0.5 rounded-full;
+  }
+
+  /* ---- Stats section ---- */
+  .stats-section {
+    background: var(--gradient-stats);
+  }
+
+  /* ---- Process step number ---- */
+  .step-number {
+    background: var(--gradient-brand);
+    @apply w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg flex-shrink-0;
+    box-shadow: 0 4px 16px hsl(36 100% 50% / 0.35);
+  }
+
+  /* ---- Category tab ---- */
+  .category-tab {
+    @apply px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap;
+  }
+
+  .category-tab-active {
+    background: var(--gradient-brand);
+    @apply text-white shadow-md;
+  }
+
+  .category-tab-inactive {
+    @apply bg-card text-muted-foreground hover:text-foreground border;
+    border-color: hsl(var(--border));
+  }
+
+  /* ---- Skeleton shimmer ---- */
+  .skeleton {
+    background: linear-gradient(
+      90deg,
+      hsl(var(--muted)) 25%,
+      hsl(var(--border)) 50%,
+      hsl(var(--muted)) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.6s infinite;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .bg-brand-gradient {
+    background: var(--gradient-brand);
+  }
+
+  .bg-hero-gradient {
+    background: var(--gradient-hero);
+  }
+
+  .bg-stats-gradient {
+    background: var(--gradient-stats);
+  }
+
+  .shadow-card {
+    box-shadow: var(--shadow-card);
+  }
+
+  .shadow-hover {
+    box-shadow: var(--shadow-hover);
+  }
+
+  .text-forest {
+    color: hsl(var(--forest));
+  }
+
+  .bg-forest-light {
+    background-color: hsl(var(--forest-light));
+  }
+
+  .bg-brown-light {
+    background-color: hsl(var(--brown-light));
+  }
+
+  .text-brown {
+    color: hsl(var(--brown));
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .animate-float-delayed {
+    animation: float 6s ease-in-out 2s infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-14px) rotate(1deg); }
+  }
+
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  @keyframes count-up {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .animate-count-up {
+    animation: count-up 0.7s ease-out forwards;
+  }
+
+  @keyframes marquee {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  .animate-marquee {
+    animation: marquee 32s linear infinite;
+  }
+
+  /* Hide scrollbar but allow scrolling */
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Pulse scale micro-animation */
+  @keyframes pulse-scale {
+    0%, 100% { transform: scale(1); }
+    50%       { transform: scale(1.05); }
+  }
+  .animate-pulse-scale {
+    animation: pulse-scale 2s ease-in-out infinite;
+  }
+
+  /* Slide up entrance */
+  @keyframes slide-up {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .animate-slide-up {
+    animation: slide-up 0.5s ease-out forwards;
+  }
+}
