@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Menu, X, Moon, Sun, Languages, User as UserIcon,
@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { useTheme } from "next-themes";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
+import \{ API_BASE_URL \} from "@/lib/api";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 
 const Navbar = () => {
@@ -79,7 +80,7 @@ const Navbar = () => {
       }
 
       try {
-        const response = await fetch("http://localhost:3003/api/notifications", {
+        const response = await fetch(${API_BASE_URL}/api/notifications, {
           headers: getAuthHeaders(),
         });
         if (!response.ok) return;

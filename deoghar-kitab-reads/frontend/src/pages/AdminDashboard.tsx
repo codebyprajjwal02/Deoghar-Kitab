@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { 
@@ -53,6 +53,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import \{ API_BASE_URL \} from "@/lib/api";
 import {
   Dialog,
   DialogContent,
@@ -256,7 +257,7 @@ const AdminDashboard = () => {
 
   const fetchBooks = async () => {
     try {
-      const response = await fetch("http://localhost:3003/api/books", {
+      const response = await fetch(${API_BASE_URL}/api/books, {
         headers: getAuthHeaders()
       });
       if (response.ok) {
@@ -283,7 +284,7 @@ const AdminDashboard = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch("http://localhost:3003/api/users", {
+      const response = await fetch(${API_BASE_URL}/api/users, {
         headers: getAuthHeaders()
       });
       if (response.ok) {
@@ -325,7 +326,7 @@ const AdminDashboard = () => {
   const fetchPendingSellers = async () => {
     try {
       // Fetch all users
-      const response = await fetch("http://localhost:3003/api/users", {
+      const response = await fetch(${API_BASE_URL}/api/users, {
         headers: getAuthHeaders()
       });
       if (response.ok) {
@@ -380,7 +381,7 @@ const AdminDashboard = () => {
   const updateBookStatus = async (id: number | string, status: string) => {
     try {
       // Update the book status in the backend
-      const response = await fetch(`http://localhost:3003/api/books/${id}/status`, {
+      const response = await fetch(${API_BASE_URL}/api/books/${id}/status, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -408,7 +409,7 @@ const AdminDashboard = () => {
   const deleteUser = async (id: number | string) => {
     try {
       // Delete the user from the backend
-      const response = await fetch(`http://localhost:3003/api/users/${id}`, {
+      const response = await fetch(${API_BASE_URL}/api/users/${id}, {
         method: 'DELETE',
         headers: getAuthHeaders()
       });
@@ -512,7 +513,7 @@ const AdminDashboard = () => {
   const approveSeller = async (email: string) => {
     try {
       // Find the user ID by email
-      const userResponse = await fetch(`http://localhost:3003/api/users`, {
+      const userResponse = await fetch(${API_BASE_URL}/api/users, {
         headers: getAuthHeaders()
       });
       if (userResponse.ok) {
@@ -521,7 +522,7 @@ const AdminDashboard = () => {
         
         if (userToApprove) {
           // Approve the seller request in the backend
-          const updateResponse = await fetch(`http://localhost:3003/api/users/${userToApprove._id}/approve-seller`, {
+          const updateResponse = await fetch(${API_BASE_URL}/api/users/${userToApprove._id}/approve-seller, {
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json',
@@ -553,7 +554,7 @@ const AdminDashboard = () => {
   const rejectSeller = async (email: string) => {
     try {
       // Find the user ID by email
-      const userResponse = await fetch(`http://localhost:3003/api/users`, {
+      const userResponse = await fetch(${API_BASE_URL}/api/users, {
         headers: getAuthHeaders()
       });
       if (userResponse.ok) {
@@ -562,7 +563,7 @@ const AdminDashboard = () => {
         
         if (userToReject) {
           // Reject the seller request in the backend
-          const updateResponse = await fetch(`http://localhost:3003/api/users/${userToReject._id}/reject-seller`, {
+          const updateResponse = await fetch(${API_BASE_URL}/api/users/${userToReject._id}/reject-seller, {
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json',

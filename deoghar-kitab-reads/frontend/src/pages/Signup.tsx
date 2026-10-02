@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Eye, EyeOff, BookOpen, User, Lock, Mail } from "lucide-react";
@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
+import \{ API_BASE_URL \} from "@/lib/api";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -49,7 +50,7 @@ const Signup = () => {
       };
       
       // Call the backend API to register the user
-      const response = await fetch("http://localhost:3003/api/users/register", {
+      const response = await fetch(${API_BASE_URL}/api/users/register, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

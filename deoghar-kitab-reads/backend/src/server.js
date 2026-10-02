@@ -1,4 +1,4 @@
-const express = require('express');
+﻿const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const routes = require('./routes');
@@ -15,7 +15,19 @@ const app = express();
 const PORT = process.env.PORT || 3001; // Changed from 3000 to 3001
 
 // Middleware
-app.use(cors());
+const allowedOrigins = [
+  'https://deoghar-kitab.vercel.app',
+];
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin) || origin.startsWith('http://localhost:')) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+}));
 app.use(express.json());
 
 // Routes

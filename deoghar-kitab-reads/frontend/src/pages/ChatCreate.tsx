@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import \{ API_BASE_URL \} from "@/lib/api";
 
 const ChatCreate = () => {
   const { getAuthHeaders } = useAuth();

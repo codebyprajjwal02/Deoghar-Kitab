@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
@@ -50,6 +50,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import \{ API_BASE_URL \} from "@/lib/api";
 
 interface SellerData {
   name: string;
@@ -87,7 +88,7 @@ const SellerDashboard = () => {
     if (!authUser) return;
     setInquiriesLoading(true);
     try {
-      const response = await fetch("http://localhost:3003/api/chats", {
+      const response = await fetch(${API_BASE_URL}/api/chats, {
         headers: getAuthHeaders()
       });
       if (response.ok) {
@@ -140,7 +141,7 @@ const SellerDashboard = () => {
 
   const checkSellerStatus = async (userId: string) => {
     try {
-      const response = await fetch(`http://localhost:3003/api/users/${userId}`, {
+      const response = await fetch(${API_BASE_URL}/api/users/${userId}, {
         headers: getAuthHeaders()
       });
       if (response.ok) {
@@ -162,7 +163,7 @@ const SellerDashboard = () => {
 
   const fetchSellerBooks = async (userId: string) => {
     try {
-      const response = await fetch(`http://localhost:3003/api/books/seller/${userId}`, {
+      const response = await fetch(${API_BASE_URL}/api/books/seller/${userId}, {
         headers: getAuthHeaders()
       });
       if (response.ok) {
@@ -229,7 +230,7 @@ const SellerDashboard = () => {
         status: "available"
       };
       
-      const response = await fetch("http://localhost:3003/api/books", {
+      const response = await fetch(${API_BASE_URL}/api/books, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -284,7 +285,7 @@ const SellerDashboard = () => {
   const deleteBook = async (id: string | number) => {
     if (!window.confirm("Are you sure you want to remove this listing?")) return;
     try {
-      const response = await fetch(`http://localhost:3003/api/books/${id}`, {
+      const response = await fetch(${API_BASE_URL}/api/books/${id}, {
         method: "DELETE",
         headers: getAuthHeaders()
       });

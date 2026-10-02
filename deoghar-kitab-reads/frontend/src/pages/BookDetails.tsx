@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { 
@@ -29,6 +29,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import \{ API_BASE_URL \} from "@/lib/api";
 
 export interface ExtendedBook {
   id: number | string;
@@ -110,7 +111,7 @@ const BookDetails = () => {
 
     const fetchBookFromBackend = async () => {
       try {
-        const response = await fetch(`http://localhost:3003/api/books/${id}`);
+        const response = await fetch(${API_BASE_URL}/api/books/${id});
         if (response.ok) {
           const dbBook = await response.json();
           // Transform database book to match our ExtendedBook interface
@@ -312,7 +313,7 @@ const BookDetails = () => {
       
       try {
         toast.loading("Connecting to seller...");
-        const res = await fetch("http://localhost:3003/api/chats/start", {
+        const res = await fetch(${API_BASE_URL}/api/chats/start, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -349,7 +350,7 @@ const BookDetails = () => {
 
     try {
       toast.loading("Opening chat room...");
-      const res = await fetch("http://localhost:3003/api/chats/start", {
+      const res = await fetch(${API_BASE_URL}/api/chats/start, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

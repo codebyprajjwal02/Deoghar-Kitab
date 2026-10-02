@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Eye, EyeOff, User, Lock, Mail, BookOpen, Sparkles, Check } from "lucide-react";
@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import LoadingAnimation from "@/components/LoadingAnimation";
+import \{ API_BASE_URL \} from "@/lib/api";
 
 const UnifiedAuthPage = () => {
   const navigate = useNavigate();
@@ -39,7 +40,7 @@ const UnifiedAuthPage = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch("http://localhost:3003/api/users/login", {
+      const response = await fetch(${API_BASE_URL}/api/users/login, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(loginData),
@@ -88,7 +89,7 @@ const UnifiedAuthPage = () => {
         userType: "user",
       };
 
-      const response = await fetch("http://localhost:3003/api/users/register", {
+      const response = await fetch(${API_BASE_URL}/api/users/register, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(userData),

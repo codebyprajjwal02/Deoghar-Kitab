@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { User, Mail, Phone, MapPin, Navigation, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
+import \{ API_BASE_URL \} from "@/lib/api";
 import { toast } from "sonner";
 
 export interface SellerData {
@@ -141,7 +142,7 @@ const SellerRegistrationForm = ({ onSubmit, onCancel }: SellerRegistrationFormPr
         };
         
         // Register seller on local backend
-        const response = await fetch(`http://localhost:3003/api/users/${userData.id || userData._id}/request-seller`, {
+        const response = await fetch(${API_BASE_URL}/api/users/${userData.id || userData._id}/request-seller, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
