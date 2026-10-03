@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Shield, Lock, Eye, EyeOff, ArrowLeft } from "lucide-react";
@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import LoadingAnimation from "@/components/LoadingAnimation";
 import { useAuth } from "@/contexts/AuthContext";
-import \{ API_BASE_URL \} from "@/lib/api";
+import { API_BASE_URL } from "@/lib/api";
 
 const AdminLogin = () => {
   const navigate = useNavigate();
@@ -45,7 +45,7 @@ const AdminLogin = () => {
       };
       
       // Call the backend API to authenticate the user
-      const response = await fetch(${API_BASE_URL}/api/users/login, {
+      const response = await fetch(`${API_BASE_URL}/api/users/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

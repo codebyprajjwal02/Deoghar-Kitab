@@ -1,9 +1,9 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import \{ API_BASE_URL \} from "@/lib/api";
+import { API_BASE_URL } from "@/lib/api";
 
 const ChatCreate = () => {
   const { getAuthHeaders } = useAuth();
@@ -18,7 +18,7 @@ const ChatCreate = () => {
     if (ids.length < 2) return alert('Provide at least two user IDs separated by commas');
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:3003/api/chat/create', {
+      const res = await fetch(`${API_BASE_URL}/api/chat/create`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
         body: JSON.stringify({ participantIds: ids, bookId: bookId || undefined })

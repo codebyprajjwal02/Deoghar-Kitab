@@ -1,12 +1,12 @@
-﻿import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { MessageSquare, BookOpen, Clock, ChevronRight, Inbox } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import \{ API_BASE_URL \} from "@/lib/api";
 import { motion } from 'framer-motion';
+import { API_BASE_URL } from "@/lib/api";
 
 const ChatList = () => {
   const { user, getAuthHeaders } = useAuth();
@@ -17,7 +17,7 @@ const ChatList = () => {
   const fetchChats = async () => {
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:3003/api/chats', {
+      const res = await fetch(`${API_BASE_URL}/api/chats`, {
         headers: getAuthHeaders(),
       });
       if (res.ok) {

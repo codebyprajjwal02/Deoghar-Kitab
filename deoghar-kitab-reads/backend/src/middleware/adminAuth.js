@@ -11,7 +11,7 @@ const adminAuth = async (req, res, next) => {
   ) {
     try {
       token = req.headers.authorization.split(' ')[1];
-      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'deoghar_kitab_secret_key');
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
       
       req.user = await User.findById(decoded.id).select('-password');
       
@@ -40,12 +40,12 @@ const requireAdmin = async (req, res, next) => {
   }
 };
 
-// Middleware to ensure the user is an approved seller
+// Middleware to ensure the user is logged in (everyone is a seller now)
 const requireApprovedSeller = async (req, res, next) => {
-  if (req.user && req.user.userType === 'seller' && req.user.isSellerApproved) {
+  if (req.user) {
     next();
   } else {
-    return res.status(403).json({ message: 'Access denied: Approved seller required' });
+    return res.status(401).json({ message: 'Not authorized, please log in' });
   }
 };
 

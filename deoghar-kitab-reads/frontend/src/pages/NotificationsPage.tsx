@@ -1,7 +1,7 @@
-﻿import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import \{ API_BASE_URL \} from "@/lib/api";
+import { API_BASE_URL } from "@/lib/api";
 
 const NotificationsPage = () => {
   const { getAuthHeaders } = useAuth();
@@ -11,7 +11,7 @@ const NotificationsPage = () => {
   const fetchNotifications = async () => {
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:3003/api/notifications', {
+      const res = await fetch(`${API_BASE_URL}/api/notifications`, {
         headers: getAuthHeaders()
       });
       if (res.ok) {
@@ -27,7 +27,7 @@ const NotificationsPage = () => {
 
   const markRead = async (id: string) => {
     try {
-      const res = await fetch(${API_BASE_URL}/api/notifications/${id}/read, {
+      const res = await fetch(`${API_BASE_URL}/api/notifications/${id}/read`, {
         method: 'PUT',
         headers: getAuthHeaders()
       });

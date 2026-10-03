@@ -6,7 +6,7 @@ const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'sprajjwalsingh230@gmail.com';
 
 // Generate JWT token
 const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET || 'deoghar_kitab_secret_key', {
+  return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: '30d',
   });
 };
@@ -58,8 +58,8 @@ const createUser = async (req, res) => {
       email,
       password,
       userType: finalUserType,
-      isSellerApproved: false,
-      sellerRequestStatus: 'none'
+      isSellerApproved: true,
+      sellerRequestStatus: 'approved'
     });
 
     const savedUser = await user.save();
@@ -73,8 +73,8 @@ const createUser = async (req, res) => {
       name: savedUser.name,
       email: savedUser.email,
       userType: savedUser.userType,
-      isSellerApproved: savedUser.isSellerApproved,
-      sellerRequestStatus: savedUser.sellerRequestStatus,
+      isSellerApproved: true,
+      sellerRequestStatus: 'approved',
       token
     });
   } catch (error) {
@@ -134,8 +134,8 @@ const loginUser = async (req, res) => {
         email,
         password,
         userType: 'admin',
-        isSellerApproved: false,
-        sellerRequestStatus: 'none'
+        isSellerApproved: true,
+        sellerRequestStatus: 'approved'
       });
       const saved = await newUser.save();
       return res.json({
@@ -144,9 +144,8 @@ const loginUser = async (req, res) => {
         name: saved.name,
         email: saved.email,
         userType: saved.userType,
-        isSellerApproved: saved.isSellerApproved || false,
-        sellerRequestStatus: saved.sellerRequestStatus || 'none',
-        sellerRequest: saved.sellerRequest,
+        isSellerApproved: true,
+        sellerRequestStatus: 'approved',
         createdAt: saved.createdAt,
         token: generateToken(saved._id)
       });
@@ -175,9 +174,8 @@ const loginUser = async (req, res) => {
       name: user.name,
       email: user.email,
       userType: user.userType,
-      isSellerApproved: user.isSellerApproved || false,
-      sellerRequestStatus: user.sellerRequestStatus || (user.sellerRequest && user.sellerRequest.requested ? 'pending' : 'none'),
-      sellerRequest: user.sellerRequest,
+      isSellerApproved: true,
+      sellerRequestStatus: 'approved',
       createdAt: user.createdAt,
       token: generateToken(user._id)
     });
@@ -187,182 +185,84 @@ const loginUser = async (req, res) => {
   }
 };
 
-// Request to become a seller
+// Request to become a seller (Mocked - always succeeds)
 const requestSeller = async (req, res) => {
-  try {
-    const userId = req.params.id;
-    const { name, phone, location, bio } = req.body;
-    
-    // Find the user by ID
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-    
-    // Check if user already has a pending request or is already a seller
-    if (user.userType === 'seller' && user.isSellerApproved) {
-      return res.status(400).json({ message: 'You are already an approved seller' });
-    }
-
-    if (user.sellerRequestStatus === 'pending') {
-      return res.status(400).json({ message: 'You already have a pending seller request' });
-    }
-
-    // Update the user with seller request information
-    user.sellerRequest = user.sellerRequest || {};
-    user.sellerRequest.requested = true;
-    user.sellerRequest.requestedAt = new Date();
-    user.sellerRequest.approved = false;
-    user.sellerRequest.approvedAt = null;
-    user.sellerInfo = {
-      name: name,
-      phone: phone,
-      location: location,
-      bio: bio
-    };
-    user.sellerRequestStatus = 'pending';
-    user.isSellerApproved = false;
-    
-    const updatedUser = await user.save();
-    
-    res.json({
-      message: 'Seller request submitted successfully',
-      user: {
-        _id: updatedUser._id,
-        name: updatedUser.name,
-        email: updatedUser.email,
-        userType: updatedUser.userType,
-        sellerRequestStatus: updatedUser.sellerRequestStatus,
-        isSellerApproved: updatedUser.isSellerApproved
-      }
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server Error' });
-  }
+  res.json({ message: 'Seller request approved successfully' });
 };
 
-// Approve a seller request
+// Approve a seller request (Mocked - always succeeds)
 const approveSeller = async (req, res) => {
-  try {
-    const userId = req.params.id;
-    
-    // Find the user by ID
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-    
-    // Check if user has a pending request
-    if (user.sellerRequestStatus !== 'pending') {
-      return res.status(400).json({ message: 'No pending seller request found or already processed' });
-    }
-
-    // Update the user to approve the seller request
-    user.userType = 'seller';
-    user.isSellerApproved = true;
-    user.sellerRequest.approved = true;
-    user.sellerRequest.approvedAt = new Date();
-    user.sellerRequestStatus = 'approved';
-
-    const updatedUser = await user.save();
-
-    res.json({
-      message: 'Seller request approved successfully',
-      user: {
-        _id: updatedUser._id,
-        name: updatedUser.name,
-        email: updatedUser.email,
-        userType: updatedUser.userType,
-        isSellerApproved: updatedUser.isSellerApproved,
-        sellerRequestStatus: updatedUser.sellerRequestStatus
-      }
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server Error' });
-  }
+  res.json({ message: 'Seller request approved successfully' });
 };
 
-// Reject a seller request
+// Reject a seller request (Mocked - always succeeds)
 const rejectSeller = async (req, res) => {
-  try {
-    const userId = req.params.id;
-    
-    // Find the user by ID
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-    
-    // Check if user has a pending request
-    if (user.sellerRequestStatus !== 'pending') {
-      return res.status(400).json({ message: 'No pending seller request found or already processed' });
-    }
-
-    // Update the user to reject the seller request
-    user.sellerRequest.requested = false;
-    user.sellerRequest.requestedAt = null;
-    user.isSellerApproved = false;
-    user.sellerRequestStatus = 'rejected';
-
-    const updatedUser = await user.save();
-
-    res.json({
-      message: 'Seller request rejected',
-      user: {
-        _id: updatedUser._id,
-        name: updatedUser.name,
-        email: updatedUser.email,
-        userType: updatedUser.userType,
-        isSellerApproved: updatedUser.isSellerApproved,
-        sellerRequestStatus: updatedUser.sellerRequestStatus
-      }
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server Error' });
-  }
+  res.json({ message: 'Seller request rejected' });
 };
 
-// Cancel a seller request
+// Cancel a seller request (Mocked - always succeeds)
 const cancelSellerRequest = async (req, res) => {
+  res.json({ message: 'Seller request cancelled successfully' });
+};
+
+// Sync a Firebase-authenticated user with MongoDB (find or create)
+const syncFirebaseUser = async (req, res) => {
   try {
-    const userId = req.params.id;
-    
-    // Find the user by ID
-    const user = await User.findById(userId);
+    const { firebaseUid, email, name, userType } = req.body;
+
+    if (!firebaseUid || !email) {
+      return res.status(400).json({ message: 'firebaseUid and email are required' });
+    }
+
+    const normalizedEmail = String(email).toLowerCase().trim();
+    const displayName = name || normalizedEmail.split('@')[0];
+
+    // 1) Find by firebaseUid first
+    let user = await User.findOne({ firebaseUid });
+
+    // 2) Otherwise find by email (legacy user that previously signed up with password)
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-    
-    // Check if user has a pending request
-    if (user.sellerRequestStatus !== 'pending') {
-      return res.status(400).json({ message: 'No pending seller request to cancel or already processed' });
-    }
-
-    // Update the user to cancel the seller request
-    user.sellerRequest.requested = false;
-    user.sellerRequest.requestedAt = null;
-    user.sellerRequestStatus = 'none';
-    user.isSellerApproved = false;
-
-    const updatedUser = await user.save();
-
-    res.json({
-      message: 'Seller request cancelled successfully',
-      user: {
-        _id: updatedUser._id,
-        name: updatedUser.name,
-        email: updatedUser.email,
-        userType: updatedUser.userType,
-        sellerRequestStatus: updatedUser.sellerRequestStatus,
-        isSellerApproved: updatedUser.isSellerApproved
+      user = await User.findOne({ email: normalizedEmail });
+      if (user && !user.firebaseUid) {
+        user.firebaseUid = firebaseUid;
+        await user.save();
       }
+    }
+
+    // 3) Otherwise create a brand new user (Firebase-only, no password)
+    if (!user) {
+      let finalUserType = 'buyer';
+      if (userType && String(userType).toLowerCase() === 'seller') finalUserType = 'seller';
+      if (userType && String(userType).toLowerCase() === 'admin') finalUserType = 'admin';
+
+      user = new User({
+        name: displayName,
+        email: normalizedEmail,
+        firebaseUid,
+        userType: finalUserType,
+        isSellerApproved: true,
+        sellerRequestStatus: 'approved',
+      });
+      await user.save();
+    }
+
+    const token = generateToken(user._id);
+
+    return res.status(200).json({
+      _id: user._id,
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      userType: user.userType,
+      isSellerApproved: user.isSellerApproved !== false,
+      sellerRequestStatus: user.sellerRequestStatus || 'approved',
+      sellerRequest: user.sellerRequest || { requested: false, requestedAt: null, approved: false, approvedAt: null },
+      createdAt: user.createdAt,
+      token,
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server Error' });
+    console.error('syncFirebaseUser error:', error);
+    return res.status(500).json({ message: 'Server Error' });
   }
 };
 
@@ -385,6 +285,7 @@ module.exports = {
   deleteUser,
   getAllUsers,
   loginUser,
+  syncFirebaseUser,
   requestSeller,
   approveSeller,
   rejectSeller,

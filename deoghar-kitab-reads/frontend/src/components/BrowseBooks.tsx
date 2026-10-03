@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useNavigate } from "react-router-dom";
+import { BookCard } from "@/components/BookCard";
 import { initialBooks, Book } from "@/lib/booksData";
 import { toast } from "sonner";
 
@@ -26,133 +27,9 @@ interface SellerBook {
   sales: number;
   revenue: number;
   sellerEmail: string;
+  category?: string;
 }
 
-const conditionConfig: Record<string, { label: string; className: string }> = {
-  Excellent: { label: "Excellent", className: "badge-excellent" },
-  Good:      { label: "Good",      className: "badge-good" },
-  Fair:      { label: "Fair",      className: "badge-fair" },
-};
-
-const BookCard = ({
-  book,
-  isFavorite,
-  onToggleFavorite,
-  onAddToCart,
-}: {
-  book: Book;
-  isFavorite: boolean;
-  onToggleFavorite: (id: number) => void;
-  onAddToCart: (id: number) => void;
-}) => {
-  const savings = book.originalPrice
-    ? Math.round(((book.originalPrice - book.price) / book.originalPrice) * 100)
-    : 0;
-  const condition = conditionConfig[book.condition] ?? { label: book.condition, className: "badge-fair" };
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      viewport={{ once: true }}
-      whileHover={{ y: -6 }}
-      className="book-card group flex flex-col"
-    >
-      {/* Image */}
-      <div className="relative overflow-hidden aspect-[3/4] rounded-t-2xl">
-        <img
-          src={book.image}
-          alt={book.title}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-        />
-
-        {/* Overlay actions */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-        {/* Quick action buttons */}
-        <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-2 group-hover:translate-x-0">
-          <button
-            onClick={() => onToggleFavorite(book.id)}
-            className={`p-2.5 rounded-xl backdrop-blur-md shadow-lg transition-all duration-200 ${
-              isFavorite
-                ? "bg-rose-500 text-white"
-                : "bg-white/90 text-gray-600 hover:bg-rose-500 hover:text-white"
-            }`}
-            title="Add to wishlist"
-          >
-            <Heart className="w-4 h-4" fill={isFavorite ? "currentColor" : "none"} />
-          </button>
-          <button
-            onClick={() => onAddToCart(book.id)}
-            className="p-2.5 rounded-xl bg-white/90 backdrop-blur-md shadow-lg text-gray-600 hover:bg-amber-500 hover:text-white transition-all duration-200"
-            title="Add to cart"
-          >
-            <ShoppingCart className="w-4 h-4" />
-          </button>
-        </div>
-
-        {/* Condition badge */}
-        <span className={`absolute top-3 left-3 ${condition.className}`}>
-          {condition.label}
-        </span>
-
-        {/* Savings badge */}
-        {savings > 0 && (
-          <span className="savings-badge absolute bottom-3 left-3">
-            {savings}% OFF
-          </span>
-        )}
-      </div>
-
-      {/* Content */}
-      <div className="p-5 flex flex-col flex-1">
-        {/* Category */}
-        <div className="flex items-center gap-1.5 mb-2">
-          <Tag className="w-3.5 h-3.5 text-muted-foreground" />
-          <span className="text-xs text-muted-foreground capitalize font-medium">{book.category}</span>
-        </div>
-
-        <a href={`/book/${book.id}`} className="block mb-1 hover:text-primary transition-colors">
-          <h3 className="text-base font-bold line-clamp-2 leading-snug">{book.title}</h3>
-        </a>
-        <p className="text-sm text-muted-foreground mb-3">{book.author}</p>
-
-        {/* Rating */}
-        {book.rating && (
-          <div className="flex items-center gap-1 mb-3">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <Star
-                key={i}
-                className={`w-3.5 h-3.5 ${i < Math.round(book.rating) ? "star-filled" : "text-muted-foreground/30"}`}
-                fill={i < Math.round(book.rating) ? "currentColor" : "none"}
-              />
-            ))}
-            <span className="text-xs text-muted-foreground ml-1">({book.reviews ?? 0})</span>
-          </div>
-        )}
-
-        <div className="mt-auto">
-          <div className="flex items-baseline gap-2 mb-3">
-            <span className="text-xl font-bold text-primary">₹{book.price}</span>
-            {book.originalPrice && (
-              <span className="text-sm text-muted-foreground line-through">₹{book.originalPrice}</span>
-            )}
-          </div>
-
-          <a href={`/book/${book.id}`} className="block w-full">
-            <Button
-              size="sm"
-              className="w-full bg-amber-500 hover:bg-amber-400 text-white font-semibold rounded-xl transition-all hover:shadow-lg"
-            >
-              View Details
-            </Button>
-          </a>
-        </div>
-      </div>
-    </motion.div>
-  );
-};
 
 const BrowseBooks = () => {
   const navigate = useNavigate();
@@ -358,6 +235,7 @@ const BrowseBooks = () => {
                   isFavorite={favorites.includes(book.id)}
                   onToggleFavorite={toggleFavorite}
                   onAddToCart={handleAddToCart}
+                  onView={(id) => navigate(`/book/${id}`)}
                 />
               </motion.div>
             ))}

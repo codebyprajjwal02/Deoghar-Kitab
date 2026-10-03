@@ -13,7 +13,7 @@ import UnifiedAuthPage from "@/pages/UnifiedAuthPage";
 import ForgotPassword from "@/pages/ForgotPassword";
 import AdminLogin from "@/pages/AdminLogin";
 import AdminDashboard from "@/pages/AdminDashboard";
-import SellerDashboardWrapper from "@/pages/SellerDashboardWrapper";
+import SellerDashboard from "@/pages/SellerDashboard";
 import ProfilePage from "@/pages/ProfilePage";
 import NotificationsPage from "@/pages/NotificationsPage";
 import ChatList from "@/pages/ChatList";
@@ -24,6 +24,11 @@ import PaymentPage from "@/pages/PaymentPage";
 import CartPage from "@/pages/CartPage";
 import WishlistPage from "@/pages/WishlistPage";
 import BrowseBooksPage from "@/pages/BrowseBooksPage";
+import NearbySearch from "@/pages/NearbySearch";
+import BookReservations from "@/pages/BookReservations";
+import InventoryManager from "@/pages/InventoryManager";
+import ShopkeeperInsights from "@/pages/ShopkeeperInsights";
+import BookRequests from "@/pages/BookRequests";
 import NotFound from "@/pages/NotFound";
 import ProtectedRoute from "@/components/ProtectedRoute";
 
@@ -56,10 +61,10 @@ const App = () => {
                     } 
                   />
                   <Route 
-                    path="/seller" 
+                    path="/seller-dashboard" 
                     element={
-                      <ProtectedRoute allowedRoles={["seller", "admin"]}>
-                        <SellerDashboardWrapper />
+                      <ProtectedRoute>
+                        <SellerDashboard />
                       </ProtectedRoute>
                     } 
                   />
@@ -124,6 +129,46 @@ const App = () => {
                     element={
                       <ProtectedRoute>
                         <PaymentPage />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/nearby-search" 
+                    element={
+                      <ProtectedRoute>
+                        <NearbySearch />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/reservations" 
+                    element={
+                      <ProtectedRoute>
+                        <BookReservations />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/inventory-manager" 
+                    element={
+                      <ProtectedRoute>
+                        <InventoryManager />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/shopkeeper-insights" 
+                    element={
+                      <ProtectedRoute>
+                        <ShopkeeperInsights />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/requests" 
+                    element={
+                      <ProtectedRoute>
+                        <BookRequests />
                       </ProtectedRoute>
                     } 
                   />

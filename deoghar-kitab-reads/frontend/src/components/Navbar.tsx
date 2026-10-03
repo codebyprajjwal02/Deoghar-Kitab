@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Menu, X, Moon, Sun, Languages, User as UserIcon,
@@ -9,8 +9,8 @@ import { Button } from "@/components/ui/button";
 import { useTheme } from "next-themes";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
-import \{ API_BASE_URL \} from "@/lib/api";
 import { Link, useNavigate, useLocation } from "react-router-dom";
+import { API_BASE_URL } from "@/lib/api";
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -80,7 +80,7 @@ const Navbar = () => {
       }
 
       try {
-        const response = await fetch(${API_BASE_URL}/api/notifications, {
+        const response = await fetch(`${API_BASE_URL}/api/notifications`, {
           headers: getAuthHeaders(),
         });
         if (!response.ok) return;
@@ -145,24 +145,58 @@ const Navbar = () => {
 
           {/* ── Desktop Nav Links ── */}
           <div className="hidden md:flex items-center gap-1">
-            {navLinks.map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
-                className={`px-3 py-2 rounded-lg text-sm font-medium transition-all relative group ${textCls}`}
-              >
-                {link.label}
-                <span className="absolute bottom-1 left-3 right-3 h-0.5 bg-amber-500 rounded-full scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
-              </a>
-            ))}
-            {isAuthenticated && user?.userType !== "admin" && (
-              <Link
-                to="/seller"
-                className={`px-3 py-2 rounded-lg text-sm font-medium transition-all relative group ${textCls}`}
-              >
-                Seller Dashboard
-                <span className="absolute bottom-1 left-3 right-3 h-0.5 bg-amber-500 rounded-full scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
-              </Link>
+            <Link
+              to="/browse"
+              className={`px-3 py-2 rounded-lg text-sm font-medium transition-all relative group ${textCls}`}
+            >
+              Browse
+              <span className="absolute bottom-1 left-3 right-3 h-0.5 bg-amber-500 rounded-full scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
+            </Link>
+            {isAuthenticated && (
+              <>
+                <Link
+                  to="/nearby-search"
+                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-all relative group ${textCls}`}
+                >
+                  Nearby Books
+                  <span className="absolute bottom-1 left-3 right-3 h-0.5 bg-amber-500 rounded-full scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
+                </Link>
+                <Link
+                  to="/reservations"
+                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-all relative group ${textCls}`}
+                >
+                  Hold Desk
+                  <span className="absolute bottom-1 left-3 right-3 h-0.5 bg-amber-500 rounded-full scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
+                </Link>
+                <Link
+                  to="/requests"
+                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-all relative group ${textCls}`}
+                >
+                  Request Desk
+                  <span className="absolute bottom-1 left-3 right-3 h-0.5 bg-amber-500 rounded-full scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
+                </Link>
+                <Link
+                  to="/inventory-manager"
+                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-all relative group ${textCls}`}
+                >
+                  Inventory Mgr
+                  <span className="absolute bottom-1 left-3 right-3 h-0.5 bg-amber-500 rounded-full scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
+                </Link>
+                <Link
+                  to="/shopkeeper-insights"
+                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-all relative group ${textCls}`}
+                >
+                  Insights
+                  <span className="absolute bottom-1 left-3 right-3 h-0.5 bg-amber-500 rounded-full scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
+                </Link>
+                <Link
+                  to="/seller-dashboard"
+                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-all relative group ${textCls}`}
+                >
+                  Seller Dashboard
+                  <span className="absolute bottom-1 left-3 right-3 h-0.5 bg-amber-500 rounded-full scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
+                </Link>
+              </>
             )}
           </div>
 
@@ -396,12 +430,25 @@ const Navbar = () => {
                   <Link to="/chat" className="text-foreground/80 hover:text-primary hover:bg-primary/5 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
                     Chat
                   </Link>
+                  <Link to="/nearby-search" className="text-foreground/80 hover:text-primary hover:bg-primary/5 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
+                    Nearby Books
+                  </Link>
+                  <Link to="/reservations" className="text-foreground/80 hover:text-primary hover:bg-primary/5 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
+                    Hold Desk
+                  </Link>
+                  <Link to="/requests" className="text-foreground/80 hover:text-primary hover:bg-primary/5 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
+                    Request Desk
+                  </Link>
+                  <Link to="/inventory-manager" className="text-foreground/80 hover:text-primary hover:bg-primary/5 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
+                    Inventory Mgr
+                  </Link>
+                  <Link to="/shopkeeper-insights" className="text-foreground/80 hover:text-primary hover:bg-primary/5 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
+                    Insights
+                  </Link>
+                  <Link to="/seller-dashboard" className="text-foreground/80 hover:text-primary hover:bg-primary/5 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
+                    Seller Dashboard
+                  </Link>
                 </>
-              )}
-              {isAuthenticated && user?.userType !== "admin" && (
-                <Link to="/seller" className="text-foreground/80 hover:text-primary hover:bg-primary/5 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
-                  Seller Dashboard
-                </Link>
               )}
 
               <div className="flex gap-3 pt-2 border-t border-border/40 mt-1">

@@ -50,8 +50,41 @@ const bookSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['available', 'sold', 'pending'],
+    enum: ['available', 'sold', 'pending', 'reserved'],
     default: 'available'
+  },
+  latitude: {
+    type: Number,
+    default: 24.4822
+  },
+  longitude: {
+    type: Number,
+    default: 86.7003
+  },
+  locationName: {
+    type: String,
+    default: 'Deoghar College Road'
+  },
+  shopType: {
+    type: String,
+    enum: ['student', 'bookstore', 'library', 'coaching', 'school', 'publisher'],
+    default: 'student'
+  },
+  rating: {
+    type: Number,
+    default: 4.5
+  },
+  pickupTime: {
+    type: String,
+    default: 'Flexible'
+  },
+  stock: {
+    type: Number,
+    default: 1
+  },
+  barcode: {
+    type: String,
+    default: ''
   },
   createdAt: {
     type: Date,

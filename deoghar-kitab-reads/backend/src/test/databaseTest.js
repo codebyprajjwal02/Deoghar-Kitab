@@ -10,7 +10,7 @@ const testDatabase = async () => {
       name: 'Test User',
       email: 'test@example.com',
       password: 'password123',
-      userType: 'user'
+      userType: 'buyer'
     });
     
     const savedUser = await testUser.save();

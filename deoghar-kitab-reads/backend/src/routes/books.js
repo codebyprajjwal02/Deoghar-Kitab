@@ -6,6 +6,15 @@ const { protect, requireAdmin, requireApprovedSeller } = require('../middleware'
 // GET /api/books - Get all available books (PUBLIC)
 router.get('/', bookController.getAllBooks);
 
+// GET /api/books/nearby - Nearby book search with location detection (PUBLIC)
+router.get('/nearby', bookController.getNearbyBooks);
+
+// POST /api/books/bulk - Bulk upload books (PROTECTED + approved seller only)
+router.post('/bulk', protect, requireApprovedSeller, bookController.bulkUploadBooks);
+
+// GET /api/books/barcode/:barcode - Get book details by barcode (PUBLIC)
+router.get('/barcode/:barcode', bookController.getBookByBarcode);
+
 // GET /api/books/seller/:sellerId - Get books by seller (PUBLIC)
 router.get('/seller/:sellerId', bookController.getBooksBySeller);
 

@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
@@ -7,9 +7,10 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { User, Lock, Eye, EyeOff } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 import LoadingAnimation from "@/components/LoadingAnimation";
-import { useAuth } from "@/contexts/AuthContext";
-import \{ API_BASE_URL \} from "@/lib/api";
+import { useAuth, getFirebaseErrorMessage } from "@/contexts/AuthContext";
 
 // Define user type
 interface RegisteredUser {
@@ -21,7 +22,7 @@ interface RegisteredUser {
 const Login = () => {
   const navigate = useNavigate();
   const { t } = useLanguage();
-  const { login } = useAuth();
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [userType, setUserType] = useState<"buyer" | "seller" | "admin">("buyer");
   const [formData, setFormData] = useState({
@@ -32,72 +33,48 @@ const Login = () => {
   const [showLoading, setShowLoading] = useState(false);
   const [error, setError] = useState("");
 
+  useEffect(() => {
+    if (!authLoading && isAuthenticated) {
+      navigate("/home", { replace: true });
+    }
+  }, [authLoading, isAuthenticated, navigate]);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
       [name]: value
     }));
-    // Clear error when user starts typing
     if (error) setError("");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (userType === "admin") {
-      // Redirect to exclusive admin login page
       navigate("/admin/login");
       return;
     }
-    
-    // Show loading animation
-    setIsLoading(true);
-    
-    try {
-      // Prepare login data
-      const loginData = {
-        email: formData.email,
-        password: formData.password,
-      };
-      
-      // Call the backend API to authenticate the user
-      const response = await fetch(${API_BASE_URL}/api/users/login, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(loginData),
-      });
-      
-      const userData = await response.json();
 
-      if (response.ok) {
-        // Store user and token via AuthContext
-        login(userData, userData.token);
-        
-        // Clear any previous errors
-        setError("");
-        setShowLoading(true);
-      } else {
-        setError(userData.message || "Login failed. Please check your credentials.");
-        setIsLoading(false);
-        setShowLoading(false);
-      }
-    } catch (error) {
-      console.error("Error during login:", error);
-      setError("An error occurred during login. Please try again.");
+    setIsLoading(true);
+
+    try {
+      await signInWithEmailAndPassword(auth, formData.email.trim(), formData.password);
+      setError("");
+      setShowLoading(true);
+    } catch (err) {
+      const fbErr = err as unknown as { code?: string };
+      const msg = fbErr && fbErr.code
+        ? getFirebaseErrorMessage(fbErr.code)
+        : "Login failed. Please check your credentials.";
+      setError(msg);
       setIsLoading(false);
       setShowLoading(false);
     }
   };
 
   const handleLoadingComplete = () => {
-    if (userType === "admin") {
-      navigate("/admin");
-    } else {
-      navigate("/home");
-    }
+    navigate("/home", { replace: true });
   };
 
   if (showLoading) {

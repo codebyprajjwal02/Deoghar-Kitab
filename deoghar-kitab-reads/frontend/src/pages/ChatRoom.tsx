@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Input } from '@/components/ui/input';
@@ -15,9 +15,9 @@ import {
 } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import \{ API_BASE_URL \} from "@/lib/api";
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
+import { API_BASE_URL } from "@/lib/api";
 
 const ChatRoom = () => {
   const { id } = useParams();
@@ -30,7 +30,7 @@ const ChatRoom = () => {
 
   const fetchChat = async (silent = false) => {
     try {
-      const res = await fetch(${API_BASE_URL}/api/chats/${id}, { headers: getAuthHeaders() });
+      const res = await fetch(`${API_BASE_URL}/api/chats/${id}`, { headers: getAuthHeaders() });
       if (res.ok) {
         const data = await res.json();
         setChat(data);
@@ -53,7 +53,7 @@ const ChatRoom = () => {
 
   const markAsRead = async () => {
     try {
-      await fetch(${API_BASE_URL}/api/chats/${id}/read, {
+      await fetch(`${API_BASE_URL}/api/chats/${id}/read`, {
         method: 'PATCH',
         headers: getAuthHeaders()
       });
@@ -82,7 +82,7 @@ const ChatRoom = () => {
     setSending(true);
 
     try {
-      const res = await fetch(${API_BASE_URL}/api/chats/${id}/messages, {
+      const res = await fetch(`${API_BASE_URL}/api/chats/${id}/messages`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
         body: JSON.stringify({ text: textToSend })

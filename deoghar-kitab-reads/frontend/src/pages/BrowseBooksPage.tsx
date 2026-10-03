@@ -14,6 +14,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import { initialBooks, Book } from "@/lib/booksData";
+import { BookCard } from "@/components/BookCard";
 import { toast } from "sonner";
 
 interface SellerBook {
@@ -23,12 +24,6 @@ interface SellerBook {
 }
 interface WishlistItem { id: number; title: string; author: string; price: number; image: string; condition: string; }
 interface CartItem { id: number; title: string; author: string; price: number; image: string; condition: string; quantity: number; sellerEmail?: string; }
-
-const conditionConfig: Record<string, { label: string; className: string }> = {
-  Excellent: { label: "Excellent", className: "badge-excellent" },
-  Good:      { label: "Good",      className: "badge-good" },
-  Fair:      { label: "Fair",      className: "badge-fair" },
-};
 
 const CATEGORY_CHIPS = [
   { value: "all",         label: "All Books" },
@@ -40,92 +35,6 @@ const CATEGORY_CHIPS = [
   { value: "nonfiction",  label: "Non-Fiction" },
 ];
 
-// ─── Book Card ─────────────────────────────────────────────────────────────
-const BookCard = ({
-  book, isFavorite, onToggleFavorite, onAddToCart, onView,
-}: {
-  book: Book; isFavorite: boolean;
-  onToggleFavorite: (id: number) => void;
-  onAddToCart: (id: number) => void;
-  onView: (id: number) => void;
-}) => {
-  const savings = book.originalPrice
-    ? Math.round(((book.originalPrice - book.price) / book.originalPrice) * 100) : 0;
-  const cond = conditionConfig[book.condition] ?? { label: book.condition, className: "badge-fair" };
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.95 }}
-      whileHover={{ y: -6 }}
-      transition={{ duration: 0.3 }}
-      className="book-card group flex flex-col cursor-pointer"
-    >
-      {/* Image */}
-      <div className="relative overflow-hidden rounded-t-2xl aspect-[3/4]">
-        <img
-          src={book.image} alt={book.title}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-          onClick={() => onView(book.id)}
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-        {/* Action buttons */}
-        <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 translate-x-2 group-hover:translate-x-0 transition-all duration-300">
-          <button
-            onClick={(e) => { e.stopPropagation(); onToggleFavorite(book.id); }}
-            className={`p-2.5 rounded-xl backdrop-blur-md shadow-lg transition-all ${isFavorite ? "bg-rose-500 text-white" : "bg-white/90 text-gray-600 hover:bg-rose-500 hover:text-white"}`}
-          >
-            <Heart className="w-4 h-4" fill={isFavorite ? "currentColor" : "none"} />
-          </button>
-          <button
-            onClick={(e) => { e.stopPropagation(); onAddToCart(book.id); }}
-            className="p-2.5 rounded-xl bg-white/90 backdrop-blur-md shadow-lg text-gray-600 hover:bg-amber-500 hover:text-white transition-all"
-          >
-            <ShoppingCart className="w-4 h-4" />
-          </button>
-        </div>
-
-        <span className={`absolute top-3 left-3 ${cond.className}`}>{cond.label}</span>
-        {savings > 0 && (
-          <span className="savings-badge absolute bottom-3 left-3">{savings}% OFF</span>
-        )}
-      </div>
-
-      {/* Content */}
-      <div className="p-4 flex flex-col flex-1" onClick={() => onView(book.id)}>
-        <div className="flex items-center gap-1.5 mb-1.5">
-          <Tag className="w-3 h-3 text-muted-foreground" />
-          <span className="text-xs text-muted-foreground capitalize font-medium">{book.category}</span>
-        </div>
-        <h3 className="text-sm font-bold line-clamp-2 mb-1 hover:text-primary transition-colors">{book.title}</h3>
-        <p className="text-xs text-muted-foreground mb-2">{book.author}</p>
-
-        {book.rating && (
-          <div className="flex items-center gap-0.5 mb-3">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <Star key={i} className={`w-3 h-3 ${i < Math.round(book.rating) ? "star-filled" : "text-muted-foreground/30"}`} fill={i < Math.round(book.rating) ? "currentColor" : "none"} />
-            ))}
-            <span className="text-xs text-muted-foreground ml-1">({book.reviews ?? 0})</span>
-          </div>
-        )}
-
-        <div className="mt-auto">
-          <div className="flex items-baseline gap-2 mb-3">
-            <span className="text-lg font-bold text-primary">₹{book.price}</span>
-            {book.originalPrice && (
-              <span className="text-xs text-muted-foreground line-through">₹{book.originalPrice}</span>
-            )}
-          </div>
-          <Button size="sm" className="w-full bg-amber-500 hover:bg-amber-400 text-white font-semibold rounded-xl text-xs">
-            View Details
-          </Button>
-        </div>
-      </div>
-    </motion.div>
-  );
-};
 
 // ─── Skeleton Card ─────────────────────────────────────────────────────────
 const SkeletonCard = () => (

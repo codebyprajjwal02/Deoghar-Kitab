@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { 
@@ -29,7 +29,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import \{ API_BASE_URL \} from "@/lib/api";
+import { API_BASE_URL } from "@/lib/api";
 
 export interface ExtendedBook {
   id: number | string;
@@ -111,7 +111,7 @@ const BookDetails = () => {
 
     const fetchBookFromBackend = async () => {
       try {
-        const response = await fetch(${API_BASE_URL}/api/books/${id});
+        const response = await fetch(`${API_BASE_URL}/api/books/${id}`);
         if (response.ok) {
           const dbBook = await response.json();
           // Transform database book to match our ExtendedBook interface
@@ -313,7 +313,7 @@ const BookDetails = () => {
       
       try {
         toast.loading("Connecting to seller...");
-        const res = await fetch(${API_BASE_URL}/api/chats/start, {
+        const res = await fetch(`${API_BASE_URL}/api/chats/start`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -350,7 +350,7 @@ const BookDetails = () => {
 
     try {
       toast.loading("Opening chat room...");
-      const res = await fetch(${API_BASE_URL}/api/chats/start, {
+      const res = await fetch(`${API_BASE_URL}/api/chats/start`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -383,6 +383,30 @@ const BookDetails = () => {
 
   const decrementQuantity = () => {
     setQuantity(prev => (prev > 1 ? prev - 1 : 1));
+  };
+
+  const handleReserveBook = () => {
+    if (!isLoggedIn) {
+      toast.error("Please sign in to place a book hold reservation");
+      return;
+    }
+    if (!book) return;
+
+    // Create a local hold reservation record
+    const offlineReservations = JSON.parse(localStorage.getItem("offline_reservations") || "[]");
+    const newRes = {
+      book: { title: book.title, author: book.author, price: book.price, locationName: "Campus Book Store" },
+      reservationId: `DK-RES-${Math.random().toString(36).substring(3, 9).toUpperCase()}`,
+      status: "pending",
+      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+      price: book.price,
+      seller: { name: book.seller || "Student Seller" }
+    };
+    offlineReservations.push(newRes);
+    localStorage.setItem("offline_reservations", JSON.stringify(offlineReservations));
+
+    toast.success(`Book reserved! Code generated in Reservations Desk.`);
+    navigate("/reservations");
   };
 
   if (!book) {
@@ -567,15 +591,24 @@ const BookDetails = () => {
                   </Button>
                 </div>
                 
-                {/* Chat with Seller Button */}
-                <Button
-                  size="lg"
-                  onClick={handleChatWithSeller}
-                  className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-2xl h-14 shadow-lg transition-all flex items-center justify-center gap-2.5"
-                >
-                  <MessageSquare className="w-5 h-5" />
-                  Chat with Seller
-                </Button>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <Button
+                    size="lg"
+                    onClick={handleReserveBook}
+                    className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-2xl h-14 shadow-lg transition-all flex items-center justify-center gap-2.5"
+                  >
+                    <Bookmark className="w-5 h-5 text-amber-300" />
+                    Reserve Free Hold (24h)
+                  </Button>
+                  <Button
+                    size="lg"
+                    onClick={handleChatWithSeller}
+                    className="bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-2xl h-14 shadow-lg transition-all flex items-center justify-center gap-2.5"
+                  >
+                    <MessageSquare className="w-5 h-5" />
+                    Chat with Seller
+                  </Button>
+                </div>
               </div>
 
               {/* Seller Contact Card */}

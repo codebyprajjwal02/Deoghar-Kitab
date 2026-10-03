@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import LoadingAnimation from "@/components/LoadingAnimation";
 import { useAuth } from "@/contexts/AuthContext";
-import \{ API_BASE_URL \} from "@/lib/api";
+import { API_BASE_URL } from "@/lib/api";
 
 // Decorative floating book cards
 const FloatingCard = ({
@@ -85,7 +85,7 @@ const ModernAuth = () => {
     if (userType === "admin") { navigate("/admin/login"); return; }
     setIsLoading(true); setError("");
     try {
-      const res = await fetch(${API_BASE_URL}/api/users/login, {
+      const res = await fetch(`${API_BASE_URL}/api/users/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: loginData.email, password: loginData.password }),
@@ -109,7 +109,7 @@ const ModernAuth = () => {
     }
     setIsLoading(true); setError("");
     try {
-      const res = await fetch(${API_BASE_URL}/api/users/register, {
+      const res = await fetch(`${API_BASE_URL}/api/users/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: signupData.name, email: signupData.email, password: signupData.password, userType: "user" }),

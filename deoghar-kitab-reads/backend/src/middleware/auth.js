@@ -15,8 +15,8 @@ const protect = async (req, res, next) => {
       // Get token from header
       token = req.headers.authorization.split(' ')[1];
 
-      // Verify token
-      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'deoghar_kitab_secret_key');
+      // Verify token — secret MUST be provided via JWT_SECRET env var (no hardcoded fallbacks)
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
       // Get user from the token, exclude password
       req.user = await User.findById(decoded.id).select('-password');

@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { 
@@ -53,7 +53,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import \{ API_BASE_URL \} from "@/lib/api";
 import {
   Dialog,
   DialogContent,
@@ -62,6 +61,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { API_BASE_URL } from "@/lib/api";
 
 // Define the book type
 interface AdminBook {
@@ -257,7 +257,7 @@ const AdminDashboard = () => {
 
   const fetchBooks = async () => {
     try {
-      const response = await fetch(${API_BASE_URL}/api/books, {
+      const response = await fetch(`${API_BASE_URL}/api/books`, {
         headers: getAuthHeaders()
       });
       if (response.ok) {
@@ -284,7 +284,7 @@ const AdminDashboard = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch(${API_BASE_URL}/api/users, {
+      const response = await fetch(`${API_BASE_URL}/api/users`, {
         headers: getAuthHeaders()
       });
       if (response.ok) {
@@ -326,7 +326,7 @@ const AdminDashboard = () => {
   const fetchPendingSellers = async () => {
     try {
       // Fetch all users
-      const response = await fetch(${API_BASE_URL}/api/users, {
+      const response = await fetch(`${API_BASE_URL}/api/users`, {
         headers: getAuthHeaders()
       });
       if (response.ok) {
@@ -381,7 +381,7 @@ const AdminDashboard = () => {
   const updateBookStatus = async (id: number | string, status: string) => {
     try {
       // Update the book status in the backend
-      const response = await fetch(${API_BASE_URL}/api/books/${id}/status, {
+      const response = await fetch(`${API_BASE_URL}/api/books/${id}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -409,7 +409,7 @@ const AdminDashboard = () => {
   const deleteUser = async (id: number | string) => {
     try {
       // Delete the user from the backend
-      const response = await fetch(${API_BASE_URL}/api/users/${id}, {
+      const response = await fetch(`${API_BASE_URL}/api/users/${id}`, {
         method: 'DELETE',
         headers: getAuthHeaders()
       });
@@ -513,7 +513,7 @@ const AdminDashboard = () => {
   const approveSeller = async (email: string) => {
     try {
       // Find the user ID by email
-      const userResponse = await fetch(${API_BASE_URL}/api/users, {
+      const userResponse = await fetch(`${API_BASE_URL}/api/users`, {
         headers: getAuthHeaders()
       });
       if (userResponse.ok) {
@@ -522,7 +522,7 @@ const AdminDashboard = () => {
         
         if (userToApprove) {
           // Approve the seller request in the backend
-          const updateResponse = await fetch(${API_BASE_URL}/api/users/${userToApprove._id}/approve-seller, {
+          const updateResponse = await fetch(`${API_BASE_URL}/api/users/${userToApprove._id}/approve-seller`, {
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json',
@@ -554,7 +554,7 @@ const AdminDashboard = () => {
   const rejectSeller = async (email: string) => {
     try {
       // Find the user ID by email
-      const userResponse = await fetch(${API_BASE_URL}/api/users, {
+      const userResponse = await fetch(`${API_BASE_URL}/api/users`, {
         headers: getAuthHeaders()
       });
       if (userResponse.ok) {
@@ -563,7 +563,7 @@ const AdminDashboard = () => {
         
         if (userToReject) {
           // Reject the seller request in the backend
-          const updateResponse = await fetch(${API_BASE_URL}/api/users/${userToReject._id}/reject-seller, {
+          const updateResponse = await fetch(`${API_BASE_URL}/api/users/${userToReject._id}/reject-seller`, {
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json',
@@ -624,7 +624,6 @@ const AdminDashboard = () => {
               { name: "Books", icon: Book, id: "books" },
               { name: "Users", icon: Users, id: "users" },
               { name: "Orders", icon: ShoppingCart, id: "orders" },
-              { name: "Sellers", icon: User, id: "sellers" },
               { name: "Database", icon: Database, id: "database" },
               { name: "System", icon: Server, id: "system" },
               { name: "Security", icon: Key, id: "security" },
@@ -776,7 +775,7 @@ const AdminDashboard = () => {
                     <CardDescription>Complete control over your website</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                       <Button variant="outline" className="h-20 flex flex-col gap-2" onClick={() => setActiveTab("books")}>
                         <Book className="w-6 h-6" />
                         <span>Manage Books</span>
@@ -784,10 +783,6 @@ const AdminDashboard = () => {
                       <Button variant="outline" className="h-20 flex flex-col gap-2" onClick={() => setActiveTab("users")}>
                         <Users className="w-6 h-6" />
                         <span>Manage Users</span>
-                      </Button>
-                      <Button variant="outline" className="h-20 flex flex-col gap-2" onClick={() => setActiveTab("sellers")}>
-                        <User className="w-6 h-6" />
-                        <span>Manage Sellers</span>
                       </Button>
                       <Button variant="outline" className="h-20 flex flex-col gap-2" onClick={() => setActiveTab("database")}>
                         <Database className="w-6 h-6" />

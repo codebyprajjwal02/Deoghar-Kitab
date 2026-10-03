@@ -1,18 +1,19 @@
-﻿import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Eye, EyeOff, User, Lock, Mail, BookOpen, Sparkles, Check } from "lucide-react";
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth, getFirebaseErrorMessage } from "@/contexts/AuthContext";
 import LoadingAnimation from "@/components/LoadingAnimation";
-import \{ API_BASE_URL \} from "@/lib/api";
 
 const UnifiedAuthPage = () => {
   const navigate = useNavigate();
   const { t } = useLanguage();
-  const { login } = useAuth();
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
 
   // State management
   const [mode, setMode] = useState<"login" | "signup">("login");
@@ -26,12 +27,26 @@ const UnifiedAuthPage = () => {
   const [loginData, setLoginData] = useState({ email: "", password: "" });
   const [signupData, setSignupData] = useState({ name: "", email: "", password: "", confirmPassword: "" });
 
+  // Redirect authenticated users away from the landing auth page
+  useEffect(() => {
+    if (!authLoading && isAuthenticated) {
+      navigate("/home", { replace: true });
+    }
+  }, [authLoading, isAuthenticated, navigate]);
+
   // Floating books data
   const floatingBooks = [
     { title: "NCERT Physics", color: "from-blue-400 to-blue-600", top: "10%", left: "5%" },
     { title: "JEE Chemistry", color: "from-green-400 to-emerald-600", top: "60%", right: "8%" },
     { title: "Maths Guide", color: "from-orange-400 to-amber-600", bottom: "15%", left: "10%" },
   ];
+
+  const redirectAfterAuth = () => {
+    setShowLoadingAnimation(true);
+    setTimeout(() => {
+      navigate("/home", { replace: true });
+    }, 1200);
+  };
 
   // Handle login
   const handleLogin = async (e: React.FormEvent) => {
@@ -40,30 +55,14 @@ const UnifiedAuthPage = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch(${API_BASE_URL}/api/users/login, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(loginData),
-      });
-
-      const userData = await response.json();
-
-      if (response.ok) {
-        login(userData, userData.token);
-        setShowLoadingAnimation(true);
-        // Redirect based on role and approval status
-        setTimeout(() => {
-          if (userData.userType === 'admin') return navigate('/admin');
-          if (userData.userType === 'seller' && userData.isSellerApproved) return navigate('/seller');
-          return navigate('/home');
-        }, 1200);
-      } else {
-        setError(userData.message || "Login failed. Please check your credentials.");
-        setIsLoading(false);
-      }
-    } catch (error) {
-      console.error("Login error:", error);
-      setError("An error occurred during login. Please try again.");
+      await signInWithEmailAndPassword(auth, loginData.email.trim(), loginData.password);
+      redirectAfterAuth();
+    } catch (err) {
+      const fbErr = err as unknown as { code?: string };
+      const msg = fbErr && fbErr.code
+        ? getFirebaseErrorMessage(fbErr.code)
+        : "Login failed. Please check your credentials.";
+      setError(msg);
       setIsLoading(false);
     }
   };
@@ -82,37 +81,27 @@ const UnifiedAuthPage = () => {
     setIsLoading(true);
 
     try {
-      const userData = {
-        name: signupData.name,
-        email: signupData.email,
-        password: signupData.password,
-        userType: "user",
-      };
-
-      const response = await fetch(${API_BASE_URL}/api/users/register, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(userData),
-      });
-
-      const responseData = await response.json();
-
-      if (response.ok) {
-        login(responseData, responseData.token);
-        setSuccessMessage("Account created successfully! Redirecting...");
-        // Redirect according to role (sellers will typically be pending approval)
-        setTimeout(() => {
-          if (responseData.userType === 'admin') return navigate('/admin');
-          if (responseData.userType === 'seller' && responseData.isSellerApproved) return navigate('/seller');
-          return navigate('/home');
-        }, 1200);
-      } else {
-        setError(responseData.message || "Registration failed");
-        setIsLoading(false);
+      const credential = await createUserWithEmailAndPassword(
+        auth,
+        signupData.email.trim(),
+        signupData.password
+      );
+      if (signupData.name && credential.user) {
+        try {
+          await updateProfile(credential.user, { displayName: signupData.name });
+          await credential.user.reload();
+        } catch {
+          /* non-fatal: continue with auth flow */
+        }
       }
-    } catch (error) {
-      console.error("Signup error:", error);
-      setError("An error occurred during registration");
+      setSuccessMessage("Account created successfully! Redirecting...");
+      redirectAfterAuth();
+    } catch (err) {
+      const fbErr = err as unknown as { code?: string };
+      const msg = fbErr && fbErr.code
+        ? getFirebaseErrorMessage(fbErr.code)
+        : "Registration failed. Please try again.";
+      setError(msg);
       setIsLoading(false);
     }
   };

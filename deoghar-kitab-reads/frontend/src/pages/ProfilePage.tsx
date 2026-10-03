@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
@@ -25,7 +25,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import \{ API_BASE_URL \} from "@/lib/api";
+import { API_BASE_URL } from "@/lib/api";
 
 const ProfilePage = () => {
   const navigate = useNavigate();
@@ -70,7 +70,7 @@ const ProfilePage = () => {
 
   const checkSellerStatus = async (userId: string) => {
     try {
-      const response = await fetch(${API_BASE_URL}/api/users/${userId}, {
+      const response = await fetch(`${API_BASE_URL}/api/users/${userId}`, {
         headers: getAuthHeaders()
       });
       if (response.ok) {
@@ -163,7 +163,7 @@ const ProfilePage = () => {
     if (!window.confirm("Are you sure you want to cancel your seller request?")) return;
     
     try {
-      const response = await fetch(${API_BASE_URL}/api/users/${user.id || user._id}/cancel-seller-request, {
+      const response = await fetch(`${API_BASE_URL}/api/users/${user.id || user._id}/cancel-seller-request`, {
         method: 'PUT',
         headers: getAuthHeaders(),
       });

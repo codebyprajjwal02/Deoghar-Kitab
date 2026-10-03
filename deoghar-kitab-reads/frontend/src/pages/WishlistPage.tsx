@@ -35,11 +35,8 @@ interface CartItem {
   quantity: number;
 }
 
-const conditionConfig: Record<string, { label: string; className: string }> = {
-  Excellent: { label: "Excellent", className: "badge-excellent text-[10px] px-2 py-0.5" },
-  Good:      { label: "Good",      className: "badge-good text-[10px] px-2 py-0.5" },
-  Fair:      { label: "Fair",      className: "badge-fair text-[10px] px-2 py-0.5" },
-};
+import { BookCard } from "@/components/BookCard";
+import { Book } from "@/lib/booksData";
 
 const WishlistPage = () => {
   const navigate = useNavigate();
@@ -152,53 +149,35 @@ const WishlistPage = () => {
                 
                 <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                   {wishlist.map((item) => {
-                    const cond = conditionConfig[item.condition] ?? { label: item.condition, className: "badge-fair text-[10px]" };
+                    const bookItem: Book = {
+                      id: item.id,
+                      title: item.title,
+                      author: item.author,
+                      price: item.price,
+                      originalPrice: Math.round(item.price * 1.4),
+                      condition: item.condition,
+                      image: item.image,
+                      category: "Reference",
+                      description: "Saved in wishlist.",
+                      pages: 300,
+                      publisher: "Unknown",
+                      publishedDate: "2023",
+                      isbn: "N/A",
+                      seller: "Student Seller",
+                      sellerEmail: "",
+                      rating: 4.5,
+                      reviews: 5,
+                      inStock: true
+                    };
                     return (
-                      <motion.div
+                      <BookCard
                         key={item.id}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.3 }}
-                        whileHover={{ y: -5 }}
-                        className="book-card group flex flex-col cursor-pointer"
-                        onClick={() => navigate(`/book/${item.id}`)}
-                      >
-                        <div className="relative aspect-[3/4] overflow-hidden rounded-t-2xl">
-                          <img
-                            src={item.image}
-                            alt={item.title}
-                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                          />
-                          <Badge className="absolute top-3 left-3 bg-primary text-white text-[10px] px-2 py-0.5">
-                            {item.condition}
-                          </Badge>
-                          
-                          <button
-                            onClick={(e) => { e.stopPropagation(); removeFromWishlist(item.id); }}
-                            className="absolute top-3 right-3 p-2 rounded-xl bg-white/95 backdrop-blur-sm text-muted-foreground hover:text-red-600 hover:bg-white shadow transition-all duration-200"
-                            title="Remove from wishlist"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                        
-                        <div className="p-4 flex flex-col flex-1">
-                          <h3 className="font-bold text-sm line-clamp-2 hover:text-primary transition-colors mb-1">{item.title}</h3>
-                          <p className="text-xs text-muted-foreground mb-4">{item.author}</p>
-                          
-                          <div className="flex items-center justify-between mt-auto gap-2">
-                            <span className="font-bold text-base text-foreground">₹{item.price}</span>
-                            <Button 
-                              size="sm" 
-                              onClick={(e) => { e.stopPropagation(); moveToCart(item); }}
-                              className="bg-amber-500 hover:bg-amber-400 text-white font-bold rounded-xl text-xs h-9 px-3 hover:scale-103 transition-all flex items-center gap-1.5 flex-shrink-0"
-                            >
-                              <ShoppingCart className="w-3.5 h-3.5" />
-                              To Cart
-                            </Button>
-                          </div>
-                        </div>
-                      </motion.div>
+                        book={bookItem}
+                        isFavorite={true}
+                        onToggleFavorite={() => removeFromWishlist(item.id)}
+                        onAddToCart={() => moveToCart(item)}
+                        onView={(id) => navigate(`/book/${id}`)}
+                      />
                     );
                   })}
                 </div>

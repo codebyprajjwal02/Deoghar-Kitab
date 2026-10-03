@@ -14,9 +14,15 @@ const userSchema = new mongoose.Schema({
     trim: true,
     lowercase: true
   },
+  firebaseUid: {
+    type: String,
+    unique: true,
+    sparse: true,
+    default: null
+  },
   password: {
     type: String,
-    required: true,
+    required: false,
     minlength: 6
   },
   userType: {
@@ -46,12 +52,12 @@ const userSchema = new mongoose.Schema({
   // New fields for seller approval workflow
   isSellerApproved: {
     type: Boolean,
-    default: false
+    default: true
   },
   sellerRequestStatus: {
     type: String,
     enum: ['none', 'pending', 'approved', 'rejected'],
-    default: 'none'
+    default: 'approved'
   },
   sellerInfo: {
     name: String,
@@ -72,7 +78,8 @@ const userSchema = new mongoose.Schema({
 // Hash password before saving
 userSchema.pre('save', async function(next) {
   if (!this.isModified('password')) return next();
-  
+  if (!this.password) return next();
+
   try {
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
@@ -84,6 +91,7 @@ userSchema.pre('save', async function(next) {
 
 // Method to compare password
 userSchema.methods.comparePassword = async function(candidatePassword) {
+  if (!this.password) return false;
   return await bcrypt.compare(candidatePassword, this.password);
 };
 

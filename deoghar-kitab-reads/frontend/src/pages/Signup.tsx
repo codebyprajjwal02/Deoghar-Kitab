@@ -1,18 +1,19 @@
-﻿import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Eye, EyeOff, BookOpen, User, Lock, Mail } from "lucide-react";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useAuth } from "@/contexts/AuthContext";
-import \{ API_BASE_URL \} from "@/lib/api";
+import { useAuth, getFirebaseErrorMessage } from "@/contexts/AuthContext";
 
 const Signup = () => {
   const navigate = useNavigate();
   const { t } = useLanguage();
-  const { login } = useAuth();
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [userType, setUserType] = useState<"buyer" | "seller">("buyer");
@@ -22,6 +23,14 @@ const Signup = () => {
     password: "",
     confirmPassword: "",
   });
+  const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (!authLoading && isAuthenticated) {
+      navigate("/home", { replace: true });
+    }
+  }, [authLoading, isAuthenticated, navigate]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -29,54 +38,42 @@ const Signup = () => {
       ...prev,
       [name]: value
     }));
+    if (error) setError("");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Validate passwords match
+    setError("");
+
     if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match");
+      setError("Passwords do not match");
       return;
     }
-    
-    try {
-      // Prepare user data
-      const userData = {
-        name: formData.name,
-        email: formData.email,
-        password: formData.password,
-        userType: userType === "seller" ? "seller" : "user"
-      };
-      
-      // Call the backend API to register the user
-      const response = await fetch(${API_BASE_URL}/api/users/register, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(userData),
-      });
-      
-      const responseData = await response.json();
 
-      if (response.ok) {
-        console.log("User registered successfully:", responseData);
-        
-        // Store user and token via AuthContext
-        login(responseData, responseData.token);
-        
-        // Show success message
-        alert("Account created successfully!");
-        
-        // Navigate to home after signup
-        navigate("/home");
-      } else {
-        alert(`Registration failed: ${responseData.message || "Unknown error"}`);
+    setIsSubmitting(true);
+
+    try {
+      const credential = await createUserWithEmailAndPassword(
+        auth,
+        formData.email.trim(),
+        formData.password
+      );
+      if (formData.name && credential.user) {
+        try {
+          await updateProfile(credential.user, { displayName: formData.name });
+          await credential.user.reload();
+        } catch {
+          /* non-fatal */
+        }
       }
-    } catch (error) {
-      console.error("Error during registration:", error);
-      alert("An error occurred during registration");
+      navigate("/home", { replace: true });
+    } catch (err) {
+      const fbErr = err as unknown as { code?: string };
+      const msg = fbErr && fbErr.code
+        ? getFirebaseErrorMessage(fbErr.code)
+        : "Registration failed. Please try again.";
+      setError(msg);
+      setIsSubmitting(false);
     }
   };
 
@@ -100,6 +97,12 @@ const Signup = () => {
           </CardHeader>
           
           <CardContent>
+            {error && (
+              <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-md text-sm">
+                {error}
+              </div>
+            )}
+
             <div className="flex gap-2 mb-6">
               <Button
                 variant={userType === "buyer" ? "default" : "outline"}
@@ -212,8 +215,8 @@ const Signup = () => {
                 </label>
               </div>
               
-              <Button type="submit" className="w-full">
-                {t.auth.signUp}
+              <Button type="submit" className="w-full" disabled={isSubmitting}>
+                {isSubmitting ? "Creating account..." : t.auth.signUp}
               </Button>
             </form>
           </CardContent>

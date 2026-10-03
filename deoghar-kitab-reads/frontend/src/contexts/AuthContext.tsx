@@ -1,4 +1,11 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import {
+  onAuthStateChanged,
+  signOut,
+  User as FirebaseUser,
+} from "firebase/auth";
+import { auth } from "@/lib/firebase";
+import { API_BASE_URL } from "@/lib/api";
 
 export interface User {
   _id: string;
@@ -30,58 +37,132 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const mapFirebaseError = (code: string): string => {
+  switch (code) {
+    case "auth/invalid-email":
+      return "Invalid email address";
+    case "auth/user-not-found":
+      return "No account found with this email";
+    case "auth/wrong-password":
+      return "Incorrect password";
+    case "auth/email-already-in-use":
+      return "Email already in use. Please sign in.";
+    case "auth/weak-password":
+      return "Password is too weak. Use at least 6 characters.";
+    case "auth/network-request-failed":
+      return "Network error. Please try again.";
+    case "auth/operation-not-allowed":
+      return "Operation not allowed. Please contact support.";
+    case "auth/user-disabled":
+      return "This account has been disabled.";
+    case "auth/too-many-requests":
+      return "Too many attempts. Please try again later.";
+    case "auth/popup-closed-by-user":
+    case "auth/cancelled-popup-request":
+      return "Sign-in cancelled.";
+    default:
+      return "Something went wrong. Please try again.";
+  }
+};
+
+export const getFirebaseErrorMessage = mapFirebaseError;
+
+const syncBackendWithFirebaseUser = async (
+  fbUser: FirebaseUser
+): Promise<{ user: User; token: string } | null> => {
+  try {
+    const payload = {
+      firebaseUid: fbUser.uid,
+      email: fbUser.email ?? "",
+      name: fbUser.displayName ?? (fbUser.email ? fbUser.email.split("@")[0] : "User"),
+    };
+
+    const res = await fetch(`${API_BASE_URL}/api/users/firebase-sync`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) {
+      console.error("Firebase sync failed:", res.status);
+      return null;
+    }
+
+    const data = await res.json();
+    const token: string = data.token;
+    const user: User = {
+      _id: data._id,
+      id: data.id,
+      name: data.name,
+      email: data.email,
+      userType: data.userType,
+      sellerRequest: data.sellerRequest,
+      isSellerApproved: data.isSellerApproved,
+      sellerRequestStatus: data.sellerRequestStatus,
+      createdAt: data.createdAt,
+    };
+    return { user, token };
+  } catch (err) {
+    console.error("syncBackendWithFirebaseUser failed:", err);
+    return null;
+  }
+};
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Initialize Auth State from localStorage
   useEffect(() => {
-    const initializeAuth = () => {
-      try {
-        const storedUser = localStorage.getItem("user");
-        const storedToken = localStorage.getItem("token");
-
-        if (storedUser && storedToken) {
-          setUser(JSON.parse(storedUser));
-          setToken(storedToken);
+    const unsubscribe = onAuthStateChanged(auth, async (fbUser) => {
+      if (fbUser && fbUser.email) {
+        const synced = await syncBackendWithFirebaseUser(fbUser);
+        if (synced) {
+          setUser(synced.user);
+          setToken(synced.token);
+          localStorage.setItem("user", JSON.stringify(synced.user));
+          localStorage.setItem("token", synced.token);
+        } else {
+          setUser(null);
+          setToken(null);
+          localStorage.removeItem("user");
+          localStorage.removeItem("token");
         }
-      } catch (error) {
-        console.error("Error loading auth data from localStorage:", error);
-        // Clear corrupt data
+      } else {
+        setUser(null);
+        setToken(null);
         localStorage.removeItem("user");
         localStorage.removeItem("token");
-      } finally {
-        setIsLoading(false);
       }
-    };
+      setIsLoading(false);
+    });
 
-    initializeAuth();
+    return () => unsubscribe();
   }, []);
 
-  // Login handler
   const login = (userData: User, userToken: string, rememberMe: boolean = false) => {
     setUser(userData);
     setToken(userToken);
     localStorage.setItem("user", JSON.stringify(userData));
     localStorage.setItem("token", userToken);
 
-    if (rememberMe) {
+    if (rememberMe && userData.email) {
       localStorage.setItem("rememberedEmail", userData.email);
     } else {
       localStorage.removeItem("rememberedEmail");
     }
   };
 
-  // Logout handler
   const logout = () => {
+    signOut(auth).catch((err) => {
+      console.error("Firebase signOut error:", err);
+    });
     setUser(null);
     setToken(null);
     localStorage.removeItem("user");
     localStorage.removeItem("token");
   };
 
-  // Update user details locally (e.g. after profile edit or seller request)
   const updateUserLocal = (updatedFields: Partial<User>) => {
     if (user) {
       const updatedUser = { ...user, ...updatedFields };
@@ -90,7 +171,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  // Helper to generate authorization headers
   const getAuthHeaders = (): HeadersInit => {
     const currentToken = token || localStorage.getItem("token");
     return {
@@ -104,7 +184,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       value={{
         user,
         token,
-        isAuthenticated: !!token,
+        isAuthenticated: !!user,
         isLoading,
         login,
         logout,
